@@ -32,18 +32,35 @@ export default function DailyChallengePage() {
   const [submittingScore, setSubmittingScore] = useState<boolean>(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean>(false);
   const [submissionError, setSubmissionError] = useState<string>("");
+  const [streakCount, setStreakCount] = useState<number>(0);
   
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState<boolean>(false);
 
-  // Check localStorage for saved name on mount
+  // Check localStorage for saved name on mount & load streak
   useEffect(() => {
     const savedName = localStorage.getItem("typelively-displayname");
     if (savedName) {
       setDisplayName(savedName);
       setIsNameSubmitted(true);
     }
-  }, []);
+
+    try {
+      const stored = localStorage.getItem("typelively-streak");
+      if (stored) {
+        const streakData = JSON.parse(stored);
+        const todayStr = new Date().toISOString().split('T')[0];
+        const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        if (streakData.lastCompletedDate === todayStr || streakData.lastCompletedDate === yesterdayStr) {
+          setStreakCount(streakData.count);
+        } else {
+          setStreakCount(0);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [isNameSubmitted]);
 
   // Fetch challenge once display name is validated
   useEffect(() => {
@@ -136,6 +153,36 @@ export default function DailyChallengePage() {
     setSubmissionSuccess(false);
   };
 
+  const updateStreak = () => {
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      
+      const stored = localStorage.getItem("typelively-streak");
+      let streakData = stored ? JSON.parse(stored) : { lastCompletedDate: "", count: 0 };
+      
+      if (streakData.lastCompletedDate === todayStr) {
+        setStreakCount(streakData.count);
+        return;
+      }
+      
+      let newCount = 1;
+      if (streakData.lastCompletedDate === yesterdayStr) {
+        newCount = streakData.count + 1;
+      }
+      
+      const newStreakData = {
+        lastCompletedDate: todayStr,
+        count: newCount,
+      };
+      
+      localStorage.setItem("typelively-streak", JSON.stringify(newStreakData));
+      setStreakCount(newCount);
+    } catch (err) {
+      console.error("Error updating streak:", err);
+    }
+  };
+
   const handleChallengeComplete = async (stats: any) => {
     setTestStats(stats);
     setSubmittingScore(true);
@@ -159,6 +206,8 @@ export default function DailyChallengePage() {
         setSubmissionSuccess(true);
         // Refresh leaderboard manually immediately
         fetchLeaderboard();
+        // Update local streak count
+        updateStreak();
       }
     } catch (err) {
       console.error(err);
@@ -249,9 +298,29 @@ export default function DailyChallengePage() {
               fontSize: "0.95rem"
             }}
           >
-            <div>
-              <span>Challenger: </span>
-              <strong style={{ color: "var(--color-secondary)" }}>{displayName}</strong>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+              <div>
+                <span>Challenger: </span>
+                <strong style={{ color: "var(--color-secondary)" }}>{displayName}</strong>
+              </div>
+              {streakCount > 0 && (
+                <div 
+                  style={{ 
+                    background: "rgba(255, 118, 117, 0.15)", 
+                    color: "var(--color-accent)", 
+                    padding: "0.25rem 0.6rem", 
+                    borderRadius: "20px", 
+                    fontSize: "0.85rem",
+                    fontWeight: 700,
+                    border: "1px solid var(--color-accent)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.25rem"
+                  }}
+                >
+                  🔥 {streakCount}-Day Streak!
+                </div>
+              )}
             </div>
             <button 
               onClick={handleClearName} 

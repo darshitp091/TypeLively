@@ -82,6 +82,28 @@ export default function TypingTest({
   const statsTimerRef = useRef<NodeJS.Timeout | null>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
 
+  // Sync refs to prevent stale closure reads in timer interval callbacks
+  const typedTextRef = useRef<string>("");
+  const totalKeysPressedRef = useRef<number>(0);
+  const mistakesCountRef = useRef<number>(0);
+  const wpmHistoryRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    typedTextRef.current = typedText;
+  }, [typedText]);
+
+  useEffect(() => {
+    totalKeysPressedRef.current = totalKeysPressed;
+  }, [totalKeysPressed]);
+
+  useEffect(() => {
+    mistakesCountRef.current = mistakesCount;
+  }, [mistakesCount]);
+
+  useEffect(() => {
+    wpmHistoryRef.current = wpmHistory;
+  }, [wpmHistory]);
+
   // Load paragraph
   const fetchParagraph = async (currentSettings?: any) => {
     setLoading(true);
@@ -94,6 +116,12 @@ export default function TypingTest({
     setMistakesCount(0);
     setTotalKeysPressed(0);
     setElapsedTime(0);
+
+    // Reset sync refs
+    typedTextRef.current = "";
+    totalKeysPressedRef.current = 0;
+    mistakesCountRef.current = 0;
+    wpmHistoryRef.current = [];
 
     const s = currentSettings || {
       testMode,
@@ -279,9 +307,15 @@ export default function TypingTest({
     stopTimers();
     setIsFinished(true);
     
+    // Read from latest refs to prevent stale closure values in interval callbacks
+    const currentTypedText = typedTextRef.current;
+    const currentKeysPressed = totalKeysPressedRef.current;
+    const currentMistakes = mistakesCountRef.current;
+    const currentWpmHistory = wpmHistoryRef.current;
+
     // Trigger confetti celebration for high accuracy!
-    const correctCount = calculateCorrectChars(typedText);
-    const accuracyVal = typedText.length > 0 ? (correctCount / typedText.length) * 100 : 0;
+    const correctCount = calculateCorrectChars(currentTypedText);
+    const accuracyVal = currentTypedText.length > 0 ? (correctCount / currentTypedText.length) * 100 : 0;
     
     if (accuracyVal > 90) {
       confetti({
@@ -295,18 +329,18 @@ export default function TypingTest({
     const finalSeconds = Math.max(1, finalTimeSec);
     const finalMinutes = finalSeconds / 60;
     
-    const correctChars = calculateCorrectChars(typedText);
+    const correctChars = calculateCorrectChars(currentTypedText);
     const finalWpm = Number(((correctChars / 5) / finalMinutes).toFixed(2));
-    const finalRawWpm = Number(((totalKeysPressed / 5) / finalMinutes).toFixed(2));
+    const finalRawWpm = Number(((currentKeysPressed / 5) / finalMinutes).toFixed(2));
     const finalCpm = Math.round(correctChars / finalMinutes);
     const finalAccuracy = Number(accuracyVal.toFixed(2));
     
     // Calculate typing speed consistency
     let finalConsistency = 85.0; // default baseline
-    if (wpmHistory.length > 2) {
-      const avgWpm = wpmHistory.reduce((a, b) => a + b, 0) / wpmHistory.length;
+    if (currentWpmHistory.length > 2) {
+      const avgWpm = currentWpmHistory.reduce((a, b) => a + b, 0) / currentWpmHistory.length;
       if (avgWpm > 0) {
-        const variance = wpmHistory.reduce((a, b) => a + Math.pow(b - avgWpm, 2), 0) / wpmHistory.length;
+        const variance = currentWpmHistory.reduce((a, b) => a + Math.pow(b - avgWpm, 2), 0) / currentWpmHistory.length;
         const stdDev = Math.sqrt(variance);
         finalConsistency = Number(Math.max(10, Math.min(100, 100 - (stdDev / avgWpm) * 100)).toFixed(2));
       }
@@ -317,7 +351,7 @@ export default function TypingTest({
       rawWpm: finalRawWpm,
       cpm: finalCpm,
       accuracy: finalAccuracy,
-      mistakes: mistakesCount,
+      mistakes: currentMistakes,
       consistency: finalConsistency,
       completionTime: Number(finalSeconds.toFixed(2)),
     };
@@ -353,6 +387,12 @@ export default function TypingTest({
     setMistakesCount(0);
     setTotalKeysPressed(0);
     setElapsedTime(0);
+
+    // Reset sync refs
+    typedTextRef.current = "";
+    totalKeysPressedRef.current = 0;
+    mistakesCountRef.current = 0;
+    wpmHistoryRef.current = [];
 
     if (testMode === 'time') {
       setTimeLeft(duration);
