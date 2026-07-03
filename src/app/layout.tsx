@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "TypeLively - 100% Free Typing Test & Code Typing Practice",
   description: "Improve your typing speed and accuracy with TypeLively. 100% free with zero ads. Daily challenges, developer coding sandbox, and real-time leaderboards.",
   keywords: "typing test, free typing test, no ads typing test, coding typing practice, typing practice, wpm calculator, daily typing challenge, mechanical keyboard simulator",
+  verification: {
+    google: "U8ToKlRfMqjIStCF4jfUczGw86qgNOonN5py4ulqnmU",
+  },
   openGraph: {
     title: "TypeLively - 100% Free Typing Test & Code Practice",
     description: "Train your fingers with TypeLively! 100% free with absolutely zero ads. Play daily challenges, enjoy mechanical keyboard sounds, and practice real coding syntax.",
