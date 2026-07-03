@@ -283,17 +283,15 @@ export default function SeoLandingPage({ params }: { params: { slug: string } })
           </h2>
           <TypingTest
             isDailyChallenge={false}
-            dailyChallengeData={{
-              id: `seo-test-${params.slug}`,
-              generated_text: "Loading text prompt...",
-              mode_type: page.config.testMode,
-              duration_value: page.config.duration || null,
-              page_count: page.config.pageCount || null,
-              difficulty: page.config.difficulty || "medium",
-              content_type: page.config.contentType || "general",
-              language: page.config.language || "english",
-              coding_language: page.config.codingLanguage || null,
-            }}
+            overrideTestMode={page.config.testMode}
+            overrideDuration={page.config.duration}
+            overridePageCount={page.config.pageCount}
+            overrideDifficulty={page.config.difficulty}
+            overrideContentType={page.config.contentType}
+            overrideLanguage={page.config.language}
+            overrideCodingLanguage={page.config.codingLanguage as any}
+            hideCategorySelector={page.config.contentType === 'coding'}
+            hideLanguageSelector={page.config.contentType === 'coding'}
           />
         </div>
       </section>

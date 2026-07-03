@@ -15,6 +15,11 @@ interface TypingTestProps {
   overrideCodingLanguage?: 'html' | 'css' | 'javascript' | 'python' | 'java' | 'c' | 'cplusplus' | 'sql';
   hideCategorySelector?: boolean;
   hideLanguageSelector?: boolean;
+  overrideTestMode?: 'time' | 'page';
+  overrideDuration?: number;
+  overridePageCount?: number;
+  overrideDifficulty?: 'easy' | 'medium' | 'hard';
+  overrideLanguage?: 'english' | 'hindi' | 'gujarati';
 }
 
 export default function TypingTest({
@@ -25,16 +30,21 @@ export default function TypingTest({
   overrideCodingLanguage,
   hideCategorySelector = false,
   hideLanguageSelector = false,
+  overrideTestMode,
+  overrideDuration,
+  overridePageCount,
+  overrideDifficulty,
+  overrideLanguage,
 }: TypingTestProps) {
   const { playKeyPressSound } = useThemeSound();
 
   // Settings
-  const [testMode, setTestMode] = useState<'time' | 'page'>('time');
-  const [duration, setDuration] = useState<number>(60); // 60, 180, 300, 600
-  const [pageCount, setPageCount] = useState<number>(1); // 1, 2, 5
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [testMode, setTestMode] = useState<'time' | 'page'>(overrideTestMode || 'time');
+  const [duration, setDuration] = useState<number>(overrideDuration || 60); // 60, 180, 300, 600
+  const [pageCount, setPageCount] = useState<number>(overridePageCount || 1); // 1, 2, 5
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(overrideDifficulty || 'medium');
   const [contentType, setContentType] = useState<'general' | 'practice' | 'quote' | 'story' | 'coding' | 'multilingual'>(overrideContentType || 'general');
-  const [language, setLanguage] = useState<'english' | 'hindi' | 'gujarati'>('english');
+  const [language, setLanguage] = useState<'english' | 'hindi' | 'gujarati'>(overrideLanguage || 'english');
   const [codingLanguage, setCodingLanguage] = useState<'html' | 'css' | 'javascript' | 'python' | 'java' | 'c' | 'cplusplus' | 'sql'>(overrideCodingLanguage || 'javascript');
 
   // Pending settings for confirmation modal
@@ -50,7 +60,7 @@ export default function TypingTest({
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   // Time & Stats tracking
-  const [timeLeft, setTimeLeft] = useState<number>(60);
+  const [timeLeft, setTimeLeft] = useState<number>(overrideDuration || 60);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [mistakesCount, setMistakesCount] = useState<number>(0);
   const [totalKeysPressed, setTotalKeysPressed] = useState<number>(0);
