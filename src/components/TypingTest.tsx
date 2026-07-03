@@ -315,7 +315,9 @@ export default function TypingTest({
 
     // Trigger confetti celebration for high accuracy!
     const correctCount = calculateCorrectChars(currentTypedText);
-    const accuracyVal = currentTypedText.length > 0 ? (correctCount / currentTypedText.length) * 100 : 0;
+    const accuracyVal = currentKeysPressed > 0 
+      ? Math.max(0, ((currentKeysPressed - currentMistakes) / currentKeysPressed) * 100) 
+      : 100;
     
     if (accuracyVal > 90) {
       confetti({
@@ -720,7 +722,9 @@ export default function TypingTest({
   // Stats Calculations for rendering
   const currentCorrect = calculateCorrectChars(typedText);
   const liveWpm = elapsedTime > 0 ? Math.round((currentCorrect / 5) / (elapsedTime / 60)) : 0;
-  const liveAccuracy = typedText.length > 0 ? Math.round((currentCorrect / typedText.length) * 100) : 100;
+  const liveAccuracy = totalKeysPressed > 0 
+    ? Math.max(0, Math.round(((totalKeysPressed - mistakesCount) / totalKeysPressed) * 100)) 
+    : 100;
 
   // Render SVG Chart for WPM Progression
   const renderStatsChart = () => {

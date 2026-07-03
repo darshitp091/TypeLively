@@ -423,3 +423,52 @@ footer {
   outline: none;
   border-color: var(--color-primary);
 }
+
+/* GitHub Star Button (Header) */
+.github-star-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: #24292e;
+  color: white;
+  border: 2px solid var(--border-color);
+  box-shadow: 2px 2px 0px var(--border-color);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.github-star-button:hover {
+  background: #2f363d;
+}
+.github-star-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--border-color);
+}
+
+/* Footer Sponsor Button */
+.sponsor-footer-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: #ff7675;
+  color: white;
+  border: 2px solid var(--border-color);
+  box-shadow: 2px 2px 0px var(--border-color);
+  text-decoration: none;
+  margin-top: 0.75rem;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.sponsor-footer-button:hover {
+  background: #ff6b6b;
+}
+.sponsor-footer-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--border-color);
+}
